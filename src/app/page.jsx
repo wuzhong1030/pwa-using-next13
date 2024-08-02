@@ -21,7 +21,7 @@ const Index = () => {
   const [registration, setRegistration] = useState(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && "serviceWorker" in navigator && window.workbox !== undefined) {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
       // run only in browser
       navigator.serviceWorker.ready.then((reg) => {
         reg.pushManager.getSubscription().then((sub) => {
