@@ -1,19 +1,39 @@
+"use strict";
 
-self.addEventListener("activate", (event) => {
-  console.log("Service Worker activating.");
+self.addEventListener("push", function (event) {
+  const data = JSON.parse(event.data.text());
+  event.waitUntil(
+    registration.showNotification(data.title, {
+      body: data.message,
+      icon: "/icons/icon-192x192.png",
+    }),
+  );
 });
 
-self.addEventListener("fetch", (event) => {
-  console.log("Fetching:", event.request.url);
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (clientList) {
+      if (clientList.length > 0) {
+        let client = clientList[0];
+        for (let i = 0; i < clientList.length; i++) {
+          if (clientList[i].focused) {
+            client = clientList[i];
+          }
+        }
+        return client.focus();
+      }
+      return clients.openWindow("/");
+    }),
+  );
 });
 
-self.addEventListener("push", (event) => {
-  const data = event.data.text();
-  const options = {
-    body: "This is the body text of the notification",
-  };
-
-  event.waitUntil(self.registration.showNotification("New Notification", options));
-});
-
-
+// self.addEventListener('pushsubscriptionchange', function(event) {
+//   event.waitUntil(
+//       Promise.all([
+//           Promise.resolve(event.oldSubscription ? deleteSubscription(event.oldSubscription) : true),
+//           Promise.resolve(event.newSubscription ? event.newSubscription : subscribePush(registration))
+//               .then(function(sub) { return saveSubscription(sub) })
+//       ])
+//   )
+// })
