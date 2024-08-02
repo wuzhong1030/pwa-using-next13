@@ -13,7 +13,6 @@ const withPWA = require("next-pwa")({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
-  customWorkerSrc: "service-worker",
 });
 
 module.exports = withPWA(nextConfig);
